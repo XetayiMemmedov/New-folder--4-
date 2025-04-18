@@ -3,54 +3,115 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Joke Generator</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background: linear-gradient(to right, #f8cdda, #1d2b64);
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .container {
+        background-color: #fffaf0;
+        padding: 30px;
+        width: 500px;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        text-align: center;
+      }
+
+      h1 {
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      .joke-box {
+        background-color: #fff;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 10px;
+        min-height: 40px;
+        transition: all 0.3s ease;
+        border: 1px solid #eee;
+      }
+
+      .list-group {
+        margin: 20px 0;
+        text-align: left;
+      }
+
+      .list-group label {
+        display: block;
+        margin-bottom: 10px;
+        cursor: pointer;
+        padding: 8px 10px;
+        background-color: #f0f0f0;
+        border-radius: 10px;
+        transition: 0.2s ease;
+      }
+
+      .list-group label:hover {
+        background-color: #e0e0e0;
+      }
+
+      .form-check-input {
+        margin-right: 10px;
+      }
+
+      #btn {
+        margin-top: 10px;
+        background-color: #ff7f50;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: 0.3s ease;
+      }
+
+      #btn:hover {
+        background-color: #ff5722;
+      }
+    </style>
   </head>
   <body>
-    <div
-      style="
-        font-size: large;
-        align-items: center;
-        justify-items: center;
-        margin: auto;
-        width: 600px;
-        height: 400px;
-        border: 8px;
-        background-color: antiquewhite;
-        border-color: black;
-        border-radius: 20px;
-      "
-    >
-      <h1 style="padding-top: 20px">Get Jokes</h1>
-      <div
-        id="jokeQ"
-        style="width: 580px; height: 50px; background-color: beige"
-      ></div>
-      <div
-        id="jokeA"
-        style="width: 580px; height: 50px; background-color: beige"
-      ></div>
-      <div class="list-group" style="padding: 20px 0 20px 0">
+    <div class="container">
+      <h1>😂 Get a Joke!</h1>
+      <div id="jokeQ" class="joke-box"></div>
+      <div id="jokeA" class="joke-box"></div>
+
+      <div class="list-group">
         <label class="list-group-item">
           <input
-            class="form-check-input me-1"
+            class="form-check-input"
             type="checkbox"
             value="1"
-            id="programming"
+            id="Programming"
           />
           Programming
         </label>
         <label class="list-group-item">
           <input
-            class="form-check-input me-1"
+            class="form-check-input"
             type="checkbox"
             value="2"
-            id="dark"
+            id="Dark"
           />
           Dark
         </label>
         <label class="list-group-item">
           <input
-            class="form-check-input me-1"
+            class="form-check-input"
             type="checkbox"
             value="3"
             id="Pun"
@@ -59,13 +120,27 @@
         </label>
       </div>
 
-      <button id="btn" style="height: 30px; width: 100px; border-radius: 20px;">Get Jokes</button>
+      <button id="btn">Tell me a joke!</button>
     </div>
+
     <script>
       const jokeQ = document.getElementById("jokeQ");
       const jokeA = document.getElementById("jokeA");
       const btn = document.getElementById("btn");
       const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+
+      // Make checkboxes behave like radio buttons
+      checkboxes.forEach((checkbox) => {
+        checkbox.addEventListener("change", () => {
+          if (checkbox.checked) {
+            checkboxes.forEach((other) => {
+              if (other !== checkbox) {
+                other.checked = false;
+              }
+            });
+          }
+        });
+      });
 
       btn.addEventListener("click", fetchJokes);
 
@@ -78,7 +153,7 @@
         });
 
         if (selected.length === 0) {
-          alert("Please select at least one category.");
+          alert("Please select a joke category!");
           return;
         }
 
@@ -89,14 +164,15 @@
           const response = await fetch(url);
           const json = await response.json();
 
+          // Reset
           jokeQ.innerHTML = "";
           jokeA.innerHTML = "";
 
           if (json.type === "twopart") {
-            jokeQ.innerHTML = json.setup;
-            jokeA.innerHTML = json.delivery;
+            jokeQ.innerHTML = "🧐 " + json.setup;
+            jokeA.innerHTML = "🤣 " + json.delivery;
           } else if (json.type === "single") {
-            jokeQ.innerHTML = json.joke;
+            jokeQ.innerHTML = "😂 " + json.joke;
           } else {
             jokeQ.innerHTML = "Couldn't fetch a joke.";
           }
